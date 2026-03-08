@@ -16,7 +16,6 @@ if (session_status() === PHP_SESSION_NONE) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link rel="stylesheet" href="<?= defined('SITE_URL') ? SITE_URL : '' ?>/css/style.css">
-
 </head>
 
 <body>

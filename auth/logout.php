@@ -1,14 +1,14 @@
 <?php
 
-require_once '../includes/config.php';
+    require_once '../includes/config.php';
 
-session_start();
+    session_start();
 
-$_SESSION = [];
+    $_SESSION = [];
 
-session_destroy();
+    session_destroy();
 
-header("Location: " . SITE_URL . "/index.php");
-exit;
+    header("Location: " . SITE_URL . "/index.php");
+    exit;
 
 ?>

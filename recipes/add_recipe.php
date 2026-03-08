@@ -12,7 +12,33 @@ $error   = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title        = trim($_POST['title'] ?? '');
     $description  = trim($_POST['description'] ?? '');
-    $category     = trim($_POST['category'] ?? '');
+    $selected_cats = trim($_POST['category'] ?? '');
+    $allowed_cats = [
+        'Breakfast', 'Brunch', 'Appetizer', 'Soup', 'Salad', 'Pasta', 'Rice & Grains',
+        'Vegetarian', 'Vegan', 'Meat', 'Poultry', 'Seafood', 'Dessert',
+        'Snack', 'Side dish', 'Sauce', 'Beverage', 'Other'
+    ];
+
+    // Vérifie que la première catégorie est sélectionnée
+    if (empty($selected_cats[0])) {
+        $errors['category'] = "Le premier menu est obligatoire.";
+    }
+
+    // Vérifie que chaque catégorie est valide
+    foreach ($selected_cats as $cat) {
+        if ($cat !== '' && !in_array($cat, $allowed_cats)) {
+            $errors['category'] = "Une des catégories sélectionnées n'est pas valide.";
+            break;
+        }
+    }
+
+    // Vérifie qu'il n'y a pas de doublons
+    $cats_no_empty = array_filter($selected_cats);
+    if (count($cats_no_empty) !== count(array_unique($cats_no_empty))) {
+        $errors['category'] = "Vous ne pouvez pas sélectionner la même catégorie deux fois.";
+    }
+
+    // Maintenant $selected_cats contient les catégories valides à insérer en base
     $difficulty   = $_POST['difficulty'] ?? 'easy';
     $ingredients  = trim($_POST['ingredients'] ?? '');
     $instructions = trim($_POST['instructions'] ?? '');
@@ -78,17 +104,45 @@ require_once '../includes/header.php';
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="category">Category</label>
-                    <select id="category" name="category">
+                    <?php
+                    // Récupération des catégories sélectionnées après soumission
+                    $selected_cats = $_POST['category'] ?? [];
+                    $cats = [
+                        'Breakfast', 'Brunch', 'Appetizer', 'Soup', 'Salad', 'Pasta', 'Rice & Grains',
+                        'Vegetarian', 'Vegan', 'Meat', 'Poultry', 'Seafood', 'Dessert',
+                        'Snack', 'Side dish', 'Sauce', 'Beverage', 'Other'
+                    ];
+                    ?>
+                    <label>Catégorie 1 *</label>
+                    <select name="category[]" class="category-select" required>
                         <option value="">Select category…</option>
-                        <?php
-                        $cats = ['Breakfast','Pasta','Soup','Salad','Vegetarian','Meat','Seafood','Dessert','Other'];
-                        foreach ($cats as $cat):
-                            $sel = (($_POST['category'] ?? '') === $cat) ? 'selected' : '';
+                        <?php foreach ($cats as $cat):
+                            $sel = (isset($selected_cats[0]) && $selected_cats[0] === $cat) ? 'selected' : '';
                         ?>
-                        <option value="<?= $cat ?>" <?= $sel ?>><?= $cat ?></option>
+                            <option value="<?= htmlspecialchars($cat) ?>" <?= $sel ?>><?= htmlspecialchars($cat) ?></option>
                         <?php endforeach; ?>
                     </select>
+
+                    <label>Catégorie 2</label>
+                    <select name="category[]" class="category-select">
+                        <option value="">Select category…</option>
+                        <?php foreach ($cats as $cat):
+                            $sel = (isset($selected_cats[1]) && $selected_cats[1] === $cat) ? 'selected' : '';
+                        ?>
+                            <option value="<?= htmlspecialchars($cat) ?>" <?= $sel ?>><?= htmlspecialchars($cat) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <label>Catégorie 3</label>
+                    <select name="category[]" class="category-select">
+                        <option value="">Select category…</option>
+                        <?php foreach ($cats as $cat):
+                            $sel = (isset($selected_cats[2]) && $selected_cats[2] === $cat) ? 'selected' : '';
+                        ?>
+                            <option value="<?= htmlspecialchars($cat) ?>" <?= $sel ?>><?= htmlspecialchars($cat) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+
                 </div>
 
                 <div class="form-group">
@@ -154,5 +208,28 @@ require_once '../includes/header.php';
     </form>
 
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const selects = document.querySelectorAll('.category-select');
 
+        function updateOptions() {
+            const selectedValues = Array.from(selects).map(s => s.value).filter(v => v !== '');
+            selects.forEach(select => {
+                Array.from(select.options).forEach(option => {
+                    if (option.value !== '' && selectedValues.includes(option.value) && option.value !== select.value) {
+                        option.disabled = true;
+                    } else {
+                        option.disabled = false;
+                    }
+                });
+            });
+        }
+
+        selects.forEach(select => {
+            select.addEventListener('change', updateOptions);
+        });
+
+        updateOptions(); // initial update pour valeurs pré-sélectionnées
+    });
+</script>
 <?php require_once '../includes/footer.php'; ?>
