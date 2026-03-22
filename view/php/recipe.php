@@ -27,10 +27,20 @@ $isOwner = isset($_SESSION['user']) && $_SESSION['user']['id'] === $recipe['user
 
     <!-- USER & LIKES -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-        <div style="font-weight:600; font-size:16px;"><?= htmlspecialchars($recipe['username']) ?></div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <?php if (!empty($recipe['avatar'])): ?>
+                <a href="<?= SITE_URL ?>/index.php?page=public_profile&id=<?= $recipe['user_id'] ?>">
+                    <img src="<?= SITE_URL . $recipe['avatar'] ?>" style="width:32px; height:32px; border-radius:50%;">
+                </a>
+            <?php endif; ?>
+            <a href="<?= SITE_URL ?>/index.php?page=public_profile&id=<?= $recipe['user_id'] ?>" style="text-decoration:none; color:#333; font-weight:600;">
+                <?= htmlspecialchars($recipe['username']) ?>
+            </a>
+        </div>
+
         <?php if(isset($_SESSION['user'])): ?>
             <a href="<?= SITE_URL ?>/index.php?page=toggle_favorite&id=<?= $recipe['id'] ?>"
-            style="font-size:14px;color:<?= $userFavored ? 'red' : '#555' ?>; text-decoration:none;">
+               style="font-size:14px;color:<?= $userFavored ? 'red' : '#555' ?>; text-decoration:none;">
                 ❤️ <?= $totalFavs ?>
             </a>
         <?php else: ?>

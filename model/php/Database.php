@@ -1,12 +1,9 @@
 <?php
 // Database configuration OVH
-define('DB_HOST', 'bilalkluzumaki.mysql.db');
-define('DB_NAME', 'bilalkluzumaki');
-define('DB_USER', 'bilalkluzumaki');
-define('DB_PASS', 'Camelia77160');
+define('DB_HOST', 'localhost'); define('DB_NAME', 'cooknshare'); define('DB_USER', 'root'); define('DB_PASS', '');
 
 // Website URL (URL de ton vrai site en ligne)
-define('SITE_URL', 'https://cooknshare.ovh/'); 
+define('SITE_URL', 'http://localhost:223/Projet-UE-L223/'); 
 
 // Le reste de ta classe Database ne change pas...
 class Database {

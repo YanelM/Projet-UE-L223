@@ -64,6 +64,16 @@ CREATE TABLE recipe_views (
     FOREIGN KEY(recipe_id) REFERENCES recipes(id)
 );
 
+CREATE TABLE user_likes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    target_user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, target_user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (target_user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- SAMPLE USER
 INSERT INTO users (username, email, password)
 VALUES ('chefadmin', 'admin@test.com', '123456');

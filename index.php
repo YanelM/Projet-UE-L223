@@ -67,6 +67,17 @@ switch($page) {
         $controller = new CommentController();
         $controller->add();
         break;
+
+    // ===== NOUVELLES ROUTES =====
+    case 'public_profile':
+        $controller = new UserController();
+        $controller->publicProfile();
+        break;
+    case 'toggleLike':
+        $controller = new UserController();
+        $controller->toggleLike();
+        break;
+
     default:
         require_once 'model/php/RecipeModel.php';
         $recipes = Recipe::latest(5);

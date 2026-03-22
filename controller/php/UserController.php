@@ -162,4 +162,60 @@ class UserController {
 
         include(__DIR__ . "/../../view/php/edit_profile.php");
     }
+
+    public function publicProfile() {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+
+        $id = $_GET['id'] ?? null;
+
+        if (!$id) {
+            header("Location: index.php");
+            exit;
+        }
+
+        $user = User::findById($id);
+
+        if (!$user) {
+            echo "User not found";
+            exit;
+        }
+
+        // recettes de cet utilisateur
+        $recipes = Recipe::byUser($id);
+
+        // likes
+        $likesCount = User::totalLikes($id);
+
+        $isLiked = false;
+        if (isset($_SESSION['user'])) {
+            $isLiked = User::isLiked($_SESSION['user']['id'], $id);
+        }
+
+        include(__DIR__ . "/../../view/php/public_profile.php");
+    }
+
+    public function toggleLike() {
+        if (!isset($_SESSION['user'])) {
+            header("Location: index.php?page=login");
+            exit;
+        }
+
+        $user_id = $_SESSION['user']['id'];
+        $target_user_id = $_GET['id'] ?? 0;
+
+        if (!$target_user_id || $target_user_id == $user_id) {
+            header("Location: index.php?page=recipes");
+            exit;
+        }
+
+        if (User::isLiked($user_id, $target_user_id)) {
+            User::removeLike($user_id, $target_user_id);
+        } else {
+            User::addLike($user_id, $target_user_id);
+        }
+
+        // Redirection vers le profil public
+        header("Location: index.php?page=public_profile&id=$target_user_id");
+        exit;
+    }
 }
