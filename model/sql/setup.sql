@@ -1,5 +1,3 @@
-CREATE DATABASE cooknshare;
-USE cooknshare;
 
 -- USERS TABLE
 CREATE TABLE users (
