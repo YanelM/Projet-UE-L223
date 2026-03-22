@@ -294,30 +294,36 @@ class RecipeController {
         $id = $_GET['id'] ?? 0;
         $recipe = Recipe::find($id);
 
-        // Vérifier que la recette existe et appartient à l'utilisateur
         if (!$recipe || $recipe['user_id'] != $_SESSION['user']['id']) {
             header("Location: index.php?page=profile&view=my_recipes");
             exit;
         }
 
-        try {
-            Recipe::delete($id);
-            $_SESSION['success'] = "Recipe deleted successfully.";
-            // suppression réussie → renvoyer au profil
-            header("Location: index.php?page=profile&view=my_recipes");
-            exit;
+        // Vérifier si la recette est en favori de quelqu'un
+        $stmt = Database::getInstance()->prepare("
+            SELECT COUNT(*) FROM recipe_favorites WHERE recipe_id = ?
+        ");
+        $stmt->execute([$id]);
+        $favoritesCount = (int)$stmt->fetchColumn();
 
-        } catch (PDOException $e) {
-            // Vérifier si c'est une contrainte de clé étrangère (recette en favoris)
-            if ($e->getCode() == 23000) {
-                $_SESSION['error'] = "You cannot delete this recipe because it is in someone's favorites.";
-                // rester sur la page de la recette
-                header("Location: index.php?page=recipe&id=$id");
-                exit;
-            } else {
-                throw $e;
-            }
+        // Vérifier si la recette a des vues
+        $stmt2 = Database::getInstance()->prepare("
+            SELECT COUNT(*) FROM recipe_views WHERE recipe_id = ?
+        ");
+        $stmt2->execute([$id]);
+        $viewsCount = (int)$stmt2->fetchColumn();
+
+        if ($favoritesCount > 0 || $viewsCount > 0) {
+            $_SESSION['error'] = "You cannot delete this recipe because it is in someone's favorites or has views.";
+            header("Location: index.php?page=recipe&id=$id");
+            exit;
         }
+
+        // Suppression OK
+        Recipe::delete($id);
+
+        header("Location: index.php?page=profile&view=my_recipes");
+        exit;
     }
 
     public function toggleFavorite() {
