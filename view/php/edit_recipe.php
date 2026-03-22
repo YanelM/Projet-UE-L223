@@ -26,12 +26,24 @@ require_once 'header.php';
         <label>Description</label>
         <textarea name="description"><?= htmlspecialchars($recipe['description']) ?></textarea>
 
-        <label>Category</label>
-        <select name="category[]" multiple>
-            <?php foreach($cats as $cat): ?>
-                <option value="<?= $cat ?>" <?= in_array($cat, explode(',', $recipe['category'])) ? 'selected' : '' ?>><?= $cat ?></option>
+        <label>Categories *</label>
+        <div id="categories-container">
+            <?php 
+            $oldCategories = explode(',', $recipe['category']);
+            if(empty($oldCategories)) $oldCategories = [''];
+            foreach($oldCategories as $cat): ?>
+                <div class="category-step">
+                    <select name="category[]" required>
+                        <option value="">Select category…</option>
+                        <?php foreach($cats as $c): ?>
+                            <option value="<?= htmlspecialchars($c) ?>" <?= $cat === $c ? 'selected' : '' ?>><?= htmlspecialchars($c) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="button" class="remove-step">✖</button>
+                </div>
             <?php endforeach; ?>
-        </select>
+        </div>
+        <button type="button" id="add-category" class="btn btn-secondary">+ Add Category</button>
 
         <label>Difficulty</label>
         <select name="difficulty">
@@ -95,5 +107,24 @@ document.addEventListener('DOMContentLoaded', () => {
             e.target.parentElement.remove();
         }
     });
+
+    function addCategoryStep() {
+        const container = document.getElementById('categories-container');
+        const div = document.createElement('div');
+        div.classList.add('category-step');
+
+        // Construire le select
+        let selectHTML = '<select name="category[]" required>';
+        selectHTML += '<option value="">Select category…</option>';
+        <?php foreach ($cats as $c): ?>
+            selectHTML += '<option value="<?= htmlspecialchars($c) ?>"><?= htmlspecialchars($c) ?></option>';
+        <?php endforeach; ?>
+        selectHTML += '</select> <button type="button" class="remove-step">✖</button>';
+
+        div.innerHTML = selectHTML;
+        container.appendChild(div);
+    }
+
+    document.getElementById('add-category').addEventListener('click', addCategoryStep);
 });
 </script>

@@ -38,14 +38,16 @@ $isOwner = isset($_SESSION['user']) && $_SESSION['user']['id'] === $recipe['user
             </a>
         </div>
 
-        <?php if(isset($_SESSION['user'])): ?>
-            <a href="<?= SITE_URL ?>/index.php?page=toggle_favorite&id=<?= $recipe['id'] ?>"
-               style="font-size:14px;color:<?= $userFavored ? 'red' : '#555' ?>; text-decoration:none;">
-                ❤️ <?= $totalFavs ?>
-            </a>
-        <?php else: ?>
-            <span style="font-size:14px;color:#555;">❤️ <?= $totalFavs ?></span>
-        <?php endif; ?>
+        <div style="display:flex;align-items:center;gap:10px;">
+            <?php if(isset($_SESSION['user'])): ?>
+                <a href="<?= SITE_URL ?>/index.php?page=toggle_favorite&id=<?= $recipe['id'] ?>"
+                style="font-size:14px;color:<?= $userFavored ? 'red' : '#555' ?>; text-decoration:none;">
+                    ❤️ <?= $totalFavs ?>
+                </a>
+            <?php else: ?>
+                <span style="font-size:14px;color:#555;">❤️ <?= $totalFavs ?></span>
+            <?php endif; ?>
+        </div>
     </div>
 
     <!-- TITLE & META -->
@@ -145,6 +147,33 @@ $isOwner = isset($_SESSION['user']) && $_SESSION['user']['id'] === $recipe['user
     <!-- BACK BUTTON -->
     <div style="margin-top:20px;">
         <a href="<?= SITE_URL ?>/index.php?page=recipes" class="btn">← Back</a>
+
+        <?php if ($isOwner): ?>
+            <!-- Bouton Modifier -->
+            <a href="<?= SITE_URL ?>/index.php?page=edit_recipe&id=<?= $recipe['id'] ?>" 
+            class="btn btn-sm" 
+            style="font-size:12px;padding:.2rem .5rem;">
+            Edit
+            </a>
+            <?php if(isset($_SESSION['error'])): ?>
+                <div style="color:red; margin-bottom:10px;">
+                    <?= $_SESSION['error']; unset($_SESSION['error']); ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if(isset($_SESSION['success'])): ?>
+                <div style="color:green; margin-bottom:10px;">
+                    <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+                </div>
+            <?php endif; ?>
+            <!-- Bouton Supprimer -->
+            <a href="<?= SITE_URL ?>/index.php?page=delete_recipe&id=<?= $recipe['id'] ?>" 
+            class="btn btn-sm btn-danger" 
+            style="font-size:12px;padding:.2rem .5rem;" 
+            onclick="return confirm('Are you sure you want to delete this recipe?');">
+            Delete
+            </a>
+        <?php endif; ?>
     </div>
 
 </div>

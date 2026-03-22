@@ -39,21 +39,19 @@ require_once 'header.php';
     </div>
 
     <!-- FILTERS -->
-    <?php if (!empty($categories)): ?>
+    <div class="filter-bar-wrapper">
         <div class="filter-bar">
             <a href="<?= SITE_URL ?>/index.php?page=recipes<?= $search ? '&search=' . urlencode($search) : '' ?>"
-               class="filter-btn <?= !$selectedCat ? 'active' : '' ?>">
-                All
-            </a>
+            class="filter-btn <?= !$selectedCat ? 'active' : '' ?>">All</a>
 
             <?php foreach ($categories as $cat): ?>
                 <a href="<?= SITE_URL ?>/index.php?page=recipes&category=<?= urlencode($cat) ?><?= $search ? '&search=' . urlencode($search) : '' ?>"
-                   class="filter-btn <?= $selectedCat === $cat ? 'active' : '' ?>">
+                class="filter-btn <?= $selectedCat === $cat ? 'active' : '' ?>">
                     <?= htmlspecialchars($cat) ?>
                 </a>
             <?php endforeach; ?>
         </div>
-    <?php endif; ?>
+    </div>
 
     <!-- CONTENT -->
     <?php if (empty($recipes)): ?>

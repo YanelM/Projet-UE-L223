@@ -159,7 +159,19 @@ class RecipeController {
         $cats = [
             'Breakfast','Brunch','Appetizer','Soup','Salad','Pasta','Rice & Grains',
             'Vegetarian','Vegan','Meat','Poultry','Seafood','Dessert',
-            'Snack','Side dish','Sauce','Beverage','Other'
+            'Snack','Side dish','Sauce','Beverage',
+            'Gluten-Free','Nut-Free','Dairy-Free','Egg-Free','Soy-Free','Shellfish-Free',
+            'Low Sugar','Low Carb','High Protein','Spicy','Kid-Friendly','Quick & Easy',
+            'Organic','Fermented','Raw','Whole Grain','Comfort Food','Street Food',
+            'BBQ','Grilled','Baked','Fried','Steamed','Slow-Cooked','Roasted',
+            'Smoothie','Juice','Tea','Coffee','Cocktail','Mocktail','Water','Milkshake',
+            'Breakfast Sandwich','Bagel','Pancakes','Waffles','Omelette','Cereal','Granola',
+            'Soup & Stew','Salad Bowl','Pasta Dish','Risotto','Curry','Stir-Fry','Pizza',
+            'Burger','Sandwich','Wrap','Taco','Sushi','Seafood Platter','Charcuterie',
+            'Dessert Cake','Ice Cream','Cookie','Brownie','Pie','Pudding','Chocolate',
+            'Vegan Dessert','Fruit Salad','Energy Bar','Trail Mix','Chips','Popcorn',
+            'Vegetable Side','Potato Side','Rice Side','Bread & Roll','Sauce & Dressing',
+            'Condiment','Dip','Smoothie Bowl','Herbal Tea','Iced Tea','Soft Drink','Beer','Wine','Other'
         ];
 
         include(__DIR__ . "/../../view/php/add_recipe.php");
@@ -181,30 +193,40 @@ class RecipeController {
         }
 
         $error = '';
+        $imagePath = $recipe['image']; // garder l'ancienne image par défaut
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $title        = trim($_POST['title'] ?? '');
-            $description  = trim($_POST['description'] ?? '');
-            $categories   = $_POST['category'] ?? [];
-            $difficulty   = $_POST['difficulty'] ?? 'easy';
-            $ingredients  = trim($_POST['ingredients'] ?? '');
-            $instructions = trim($_POST['instructions'] ?? '');
-            $prep_time    = (int)($_POST['prep_time'] ?? 0);
-            $cook_time    = (int)($_POST['cook_time'] ?? 0);
-            $servings     = (int)($_POST['servings'] ?? 0);
+            $title       = trim($_POST['title'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $categories  = $_POST['category'] ?? [];
+            $difficulty  = $_POST['difficulty'] ?? 'easy';
 
-            if (empty($title) || empty($ingredients) || empty($instructions)) {
+            // Ingrédients et instructions sous forme de tableau
+            $ingredientsArray  = $_POST['ingredients'] ?? [];
+            $instructionsArray = $_POST['instructions'] ?? [];
+
+            // Nettoyer chaque élément
+            $ingredients  = array_map('trim', $ingredientsArray);
+            $instructions = array_map('trim', $instructionsArray);
+
+            // Convertir en texte avec retour à la ligne
+            $ingredientsStr  = implode("\n", $ingredients);
+            $instructionsStr = implode("\n", $instructions);
+
+            $prep_time = (int)($_POST['prep_time'] ?? 0);
+            $cook_time = (int)($_POST['cook_time'] ?? 0);
+            $servings  = (int)($_POST['servings'] ?? 0);
+
+            // Vérification des champs obligatoires
+            if (empty($title) || empty($ingredientsStr) || empty($instructionsStr)) {
                 $error = "Please fill in the required fields.";
             }
 
-            $imagePath = $recipe['image']; // garder l'ancienne image par défaut
-
+            // Gestion upload image
             if (!empty($_FILES['image']['name'])) {
-
                 $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 
                 if (in_array($_FILES['image']['type'], $allowedTypes)) {
-
                     $uploadDir = 'uploads/recipes/';
                     if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
@@ -223,27 +245,41 @@ class RecipeController {
 
             if (!$error) {
                 Recipe::update($id, [
-                    'image' => $imagePath,
-                    'title' => $title,
-                    'description' => $description,
-                    'category' => $categories,
-                    'difficulty' => $difficulty,
-                    'ingredients' => $ingredients,
-                    'instructions' => $instructions,
-                    'prep_time' => $prep_time,
-                    'cook_time' => $cook_time,
-                    'servings' => $servings
+                    'image'        => $imagePath,
+                    'title'        => $title,
+                    'description'  => $description,
+                    'category'     => implode(',', $categories), // ou JSON si tu veux
+                    'difficulty'   => $difficulty,
+                    'ingredients'  => $ingredientsStr,
+                    'instructions' => $instructionsStr,
+                    'prep_time'    => $prep_time,
+                    'cook_time'    => $cook_time,
+                    'servings'     => $servings
                 ]);
 
-                header("Location: index.php?page=profile&view=my_recipes");
+                // Redirection vers la page recette après modification
+                header("Location: index.php?page=recipe&id=$id&success=1");
                 exit;
             }
         }
 
+        // Liste des catégories possibles
         $cats = [
             'Breakfast','Brunch','Appetizer','Soup','Salad','Pasta','Rice & Grains',
             'Vegetarian','Vegan','Meat','Poultry','Seafood','Dessert',
-            'Snack','Side dish','Sauce','Beverage','Other'
+            'Snack','Side dish','Sauce','Beverage',
+            'Gluten-Free','Nut-Free','Dairy-Free','Egg-Free','Soy-Free','Shellfish-Free',
+            'Low Sugar','Low Carb','High Protein','Spicy','Kid-Friendly','Quick & Easy',
+            'Organic','Fermented','Raw','Whole Grain','Comfort Food','Street Food',
+            'BBQ','Grilled','Baked','Fried','Steamed','Slow-Cooked','Roasted',
+            'Smoothie','Juice','Tea','Coffee','Cocktail','Mocktail','Water','Milkshake',
+            'Breakfast Sandwich','Bagel','Pancakes','Waffles','Omelette','Cereal','Granola',
+            'Soup & Stew','Salad Bowl','Pasta Dish','Risotto','Curry','Stir-Fry','Pizza',
+            'Burger','Sandwich','Wrap','Taco','Sushi','Seafood Platter','Charcuterie',
+            'Dessert Cake','Ice Cream','Cookie','Brownie','Pie','Pudding','Chocolate',
+            'Vegan Dessert','Fruit Salad','Energy Bar','Trail Mix','Chips','Popcorn',
+            'Vegetable Side','Potato Side','Rice Side','Bread & Roll','Sauce & Dressing',
+            'Condiment','Dip','Smoothie Bowl','Herbal Tea','Iced Tea','Soft Drink','Beer','Wine','Other'
         ];
 
         include(__DIR__ . "/../../view/php/edit_recipe.php");
@@ -258,12 +294,30 @@ class RecipeController {
         $id = $_GET['id'] ?? 0;
         $recipe = Recipe::find($id);
 
-        if ($recipe && $recipe['user_id'] == $_SESSION['user']['id']) {
-            Recipe::delete($id);
+        // Vérifier que la recette existe et appartient à l'utilisateur
+        if (!$recipe || $recipe['user_id'] != $_SESSION['user']['id']) {
+            header("Location: index.php?page=profile&view=my_recipes");
+            exit;
         }
 
-        header("Location: index.php?page=profile&view=my_recipes");
-        exit;
+        try {
+            Recipe::delete($id);
+            $_SESSION['success'] = "Recipe deleted successfully.";
+            // suppression réussie → renvoyer au profil
+            header("Location: index.php?page=profile&view=my_recipes");
+            exit;
+
+        } catch (PDOException $e) {
+            // Vérifier si c'est une contrainte de clé étrangère (recette en favoris)
+            if ($e->getCode() == 23000) {
+                $_SESSION['error'] = "You cannot delete this recipe because it is in someone's favorites.";
+                // rester sur la page de la recette
+                header("Location: index.php?page=recipe&id=$id");
+                exit;
+            } else {
+                throw $e;
+            }
+        }
     }
 
     public function toggleFavorite() {

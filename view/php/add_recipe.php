@@ -36,16 +36,27 @@ require_once 'header.php';
             </div>
 
             <div class="form-group">
-                <?php for ($i = 0; $i < 3; $i++): ?>
-                    <label>Category <?= $i + 1 ?> <?= $i === 0 ? '*' : '' ?></label>
-                    <select name="category[]" class="category-select" <?= $i === 0 ? 'required' : '' ?>>
-                        <option value="">Select category…</option>
-                        <?php foreach ($cats as $cat): ?>
-                            <?php $sel = (isset($_POST['category'][$i]) && $_POST['category'][$i] === $cat) ? 'selected' : ''; ?>
-                            <option value="<?= htmlspecialchars($cat) ?>" <?= $sel ?>><?= htmlspecialchars($cat) ?></option>
+                <div class="form-group">
+                    <label>Categories *</label>
+                    <div id="categories-container">
+                        <?php
+                        $oldCategories = $_POST['category'] ?? [''];
+                        foreach ($oldCategories as $cat): ?>
+                            <div class="category-step">
+                                <select name="category[]" required>
+                                    <option value="">Select category…</option>
+                                    <?php foreach ($cats as $c): 
+                                        $sel = ($cat === $c) ? 'selected' : '';
+                                    ?>
+                                        <option value="<?= htmlspecialchars($c) ?>" <?= $sel ?>><?= htmlspecialchars($c) ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <button type="button" class="remove-step">✖</button>
+                            </div>
                         <?php endforeach; ?>
-                    </select>
-                <?php endfor; ?>
+                    </div>
+                    <button type="button" id="add-category" class="btn btn-secondary">+ Add Category</button>
+                </div>
             </div>
 
             <div class="form-group">
@@ -127,5 +138,24 @@ document.addEventListener('DOMContentLoaded', () => {
             e.target.parentElement.remove();
         }
     });
+
+    function addCategoryStep() {
+        const container = document.getElementById('categories-container');
+        const div = document.createElement('div');
+        div.classList.add('category-step');
+
+        // Créez le select avec les options
+        let selectHTML = '<select name="category[]" required>';
+        selectHTML += '<option value="">Select category…</option>';
+        <?php foreach ($cats as $c): ?>
+            selectHTML += '<option value="<?= htmlspecialchars($c) ?>"><?= htmlspecialchars($c) ?></option>';
+        <?php endforeach; ?>
+        selectHTML += '</select> <button type="button" class="remove-step">✖</button>';
+
+        div.innerHTML = selectHTML;
+        container.appendChild(div);
+    }
+
+    document.getElementById('add-category').addEventListener('click', addCategoryStep);
 });
 </script>

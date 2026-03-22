@@ -96,18 +96,49 @@ input[type="search"] {
 /* =========================
    FILTER BAR
    ========================= */
-.filter-bar {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    margin: 15px 0;
+
+/* Conteneur scrollable */
+.filter-bar-wrapper {
+    overflow-x: auto;                  /* scroll horizontal si nécessaire */
+    -webkit-overflow-scrolling: touch; /* scroll fluide sur mobile */
+    width: 100%;                        /* prend toute la largeur */
 }
 
+/* Barre de boutons */
+.filter-bar {
+    display: inline-flex;               /* tous les boutons en ligne */
+    gap: 8px;
+    white-space: nowrap;                /* empêcher le retour à la ligne */
+}
+
+/* Boutons */
 .filter-btn {
-    background: #EFEFF4;
+    flex: 0 0 auto;                     /* important : ne pas rétrécir */
     padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 12px;
+    background-color: #f2f2f2;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #333;
+    transition: background 0.2s;
+}
+
+.filter-btn.active {
+    background-color: #ff9900;
+    color: white;
+}
+
+.filter-btn:hover {
+    background-color: #e0e0e0;
+}
+
+/* Scrollbar optionnelle */
+.filter-bar-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+
+.filter-bar-wrapper::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
 }
 
 /* =========================
