@@ -1,15 +1,14 @@
 <?php
-// Database configuration
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'cooknshare');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+// Database configuration OVH
+define('DB_HOST', 'bilalkluzumaki.mysql.db');
+define('DB_NAME', 'bilalkluzumaki');
+define('DB_USER', 'bilalkluzumaki');
+define('DB_PASS', 'Camelia77160');
 
-// Website URL (match development server)
-define('SITE_URL', 'http://localhost:223/Projet-UE-L223/'); 
+// Website URL (URL de ton vrai site en ligne)
+define('SITE_URL', 'https://cooknshare.ovh/'); 
 
-// Database singleton compatible avec Database::getInstance()
-
+// Le reste de ta classe Database ne change pas...
 class Database {
     private static ?Database $instance = null;
     private PDO $pdo;
@@ -27,7 +26,6 @@ class Database {
         }
     }
 
-    // Retourne l’instance PDO
     public static function getInstance(): PDO {
         if (self::$instance === null) {
             self::$instance = new self();
