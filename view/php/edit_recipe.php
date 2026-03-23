@@ -2,7 +2,7 @@
 $pageTitle = "Edit Recipe"; // Titre de la page
 require_once 'header.php'; // Inclut header
 ?>
-<div class="container" style="padding:20px;"> <!-- Conteneur -->
+<div class="container edit-recipe" style="padding:20px;"> <!-- Conteneur -->
 
     <h2>Edit Recipe: <?= htmlspecialchars($recipe['title']) ?></h2> <!-- Titre recette -->
     <?php if(!empty($error)): ?>

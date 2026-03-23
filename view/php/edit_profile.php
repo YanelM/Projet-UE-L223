@@ -4,7 +4,7 @@ require_once 'header.php'; // Inclut header
 $user = $_SESSION['user']; // Récupère utilisateur connecté
 ?>
 
-<div class="container"> <!-- Conteneur principal -->
+<div class="container edit-profile"> <!-- Conteneur principal -->
 
     <div class="form-card"> <!-- Carte formulaire -->
         <h2>Edit Profile</h2> <!-- Titre -->

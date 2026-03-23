@@ -31,7 +31,7 @@
 /* Styles de base du body */
 body {
     font-family: 'Inter', sans-serif;
-    background: var(--text);
+    background: var(--bg);
     color: var(--text);
 }
 
@@ -77,6 +77,7 @@ input[type="search"] {
     border-radius: 12px;
     border: none;
     font-weight: 600;
+    text-decoration: none;
 }
 
 /* Boutons principaux */
@@ -273,6 +274,402 @@ input[type="search"] {
 .nav-item { text-align: center; font-size: 10px; color: var(--muted); }
 .nav-item span { font-size: 18px; }
 .nav-item.active { color: var(--primary); }
+
+
+
+/* =========================================================
+   ✨ ADD RECIPE PAGE ONLY (SAFE IMPROVEMENTS)
+   ========================================================= */
+
+/* ===== PAGE WRAPPER ===== */
+.add-recipe-page {
+    max-width: 700px;
+    margin: 20px auto;
+}
+
+/* ===== HEADER ===== */
+.add-recipe-page .page-header {
+    margin-bottom: 20px;
+}
+
+.add-recipe-page .page-header p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* ===== FORM CARD EFFECT ===== */
+.add-recipe-page form {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+}
+
+/* ===== FORM SECTIONS ===== */
+.add-recipe-page .form-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.add-recipe-page .form-section:last-child {
+    border-bottom: none;
+}
+
+.add-recipe-page .form-section-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+/* ===== FORM GROUP ===== */
+.add-recipe-page .form-group {
+    margin-bottom: 15px;
+}
+
+/* ===== INPUT STYLE BOOST ===== */
+.add-recipe-page input,
+.add-recipe-page textarea,
+.add-recipe-page select {
+    background: #FAFAFA;
+    border-radius: 14px;
+}
+
+/* Focus effect (très important UX) */
+.add-recipe-page input:focus,
+.add-recipe-page textarea:focus,
+.add-recipe-page select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.1);
+}
+
+/* ===== STEP ITEMS (ingredients, instructions, categories) ===== */
+.add-recipe-page .ingredient-step,
+.add-recipe-page .instruction-step,
+.add-recipe-page .category-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Inputs inside steps */
+.add-recipe-page .ingredient-step input,
+.add-recipe-page .instruction-step input,
+.add-recipe-page .category-step select {
+    flex: 1;
+}
+
+/* ===== REMOVE BUTTON ===== */
+.add-recipe-page .remove-step {
+    border: none;
+    background: #FFE5E3;
+    color: #FF3B30;
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.add-recipe-page .remove-step:hover {
+    background: #ffd6d3;
+}
+
+/* ===== ADD BUTTONS ===== */
+.add-recipe-page #add-ingredient,
+.add-recipe-page #add-instruction,
+.add-recipe-page #add-category {
+    margin-top: 10px;
+}
+
+/* ===== FORM ACTIONS ===== */
+.add-recipe-page .form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+/* ===== ALERT ===== */
+.add-recipe-page .alert-error {
+    background: #FFE5E3;
+    color: #FF3B30;
+    padding: 12px;
+    border-radius: 12px;
+}
+
+/* ===== SMALL HOVER POLISH ===== */
+.add-recipe-page .btn-primary:hover {
+    transform: translateY(-2px);
+}
+
+.add-recipe-page .btn-secondary:hover {
+    background: #e2e2e7;
+}
+
+/* ===== MOBILE OPTIMIZATION ===== */
+@media (max-width: 480px) {
+    .add-recipe-page form {
+        padding: 15px;
+        border-radius: 16px;
+    }
+}
+
+/* =========================================================
+   ✨ REMOVE UNDERLINES (GLOBAL CLEAN LINKS)
+   ========================================================= */
+
+/* Tous les liens */
+a {
+    text-decoration: none;
+    color: inherit; /* garde la couleur du parent */
+}
+
+/* Liens au hover */
+a:hover {
+    text-decoration: none;
+}
+
+/* Boutons sous forme de lien */
+.btn,
+button {
+    text-decoration: none;
+}
+
+/* Si certains navigateurs ajoutent un style focus */
+a:focus,
+button:focus {
+    outline: none;
+}
+
+/* =========================================================
+   ✨ EDIT PROFILE PAGE (SCOPED CLEAN UI)
+   ========================================================= */
+
+/* ===== WRAPPER ===== */
+.edit-profile {
+    max-width: 500px;
+    margin: 30px auto;
+}
+
+/* ===== CARD ===== */
+.edit-profile .form-card {
+    box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.03);
+}
+
+/* ===== TITLE ===== */
+.edit-profile h2 {
+    margin-bottom: 20px;
+}
+
+/* ===== FORM ===== */
+.edit-profile form {
+    margin-top: 10px;
+}
+
+/* ===== LABELS ===== */
+.edit-profile label {
+    margin-top: 15px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+/* ===== INPUTS ===== */
+.edit-profile input {
+    background: #FAFAFA;
+    border-radius: 14px;
+}
+
+/* Focus UX */
+.edit-profile input:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(255,122,0,0.1);
+}
+
+/* File input style */
+.edit-profile input[type="file"] {
+    padding: 10px;
+    background: white;
+}
+
+/* ===== SAVE BUTTON ===== */
+.edit-profile .btn-primary {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.edit-profile .btn-primary:hover {
+    transform: translateY(-2px);
+}
+
+/* ===== BACK BUTTON ===== */
+.edit-profile .form-card > .btn {
+    margin-top: 15px;
+    display: block;
+    text-align: center;
+    background: #f2f2f2;
+}
+
+.edit-profile .form-card > .btn:hover {
+    background: #e5e5ea;
+}
+
+/* ===== ALERTS ===== */
+.edit-profile .success {
+    background: #E6F9F0;
+    color: #1DB954;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.edit-profile .error {
+    background: #FFE5E3;
+    color: #FF3B30;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 480px) {
+    .edit-profile .form-card {
+        padding: 15px;
+        border-radius: 16px;
+    }
+}
+
+
+/* =========================================================
+   ✨ EDIT RECIPE PAGE (SCOPED UI UPGRADE)
+   ========================================================= */
+
+/* ===== WRAPPER ===== */
+.edit-recipe {
+    max-width: 700px;
+    margin: 30px auto;
+}
+
+/* ===== TITLE ===== */
+.edit-recipe h2 {
+    margin-bottom: 20px;
+}
+
+/* ===== FORM ===== */
+.edit-recipe form {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.05);
+}
+
+/* ===== LABELS ===== */
+.edit-recipe label {
+    display: block;
+    margin-top: 15px;
+    font-weight: 500;
+}
+
+/* ===== INPUTS ===== */
+.edit-recipe input,
+.edit-recipe textarea,
+.edit-recipe select {
+    background: #FAFAFA;
+    border-radius: 14px;
+}
+
+/* Focus UX */
+.edit-recipe input:focus,
+.edit-recipe textarea:focus,
+.edit-recipe select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(255,122,0,0.1);
+}
+
+/* ===== IMAGE PREVIEW ===== */
+.edit-recipe img {
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Checkbox spacing */
+.edit-recipe input[type="checkbox"] {
+    width: auto;
+    margin-right: 5px;
+}
+
+/* ===== STEP ITEMS ===== */
+.edit-recipe .ingredient-step,
+.edit-recipe .instruction-step,
+.edit-recipe .category-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* Inputs inside steps */
+.edit-recipe .ingredient-step input,
+.edit-recipe .instruction-step input,
+.edit-recipe .category-step select {
+    flex: 1;
+}
+
+/* ===== REMOVE BUTTON ===== */
+.edit-recipe .remove-step {
+    border: none;
+    background: #FFE5E3;
+    color: #FF3B30;
+    border-radius: 10px;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+.edit-recipe .remove-step:hover {
+    background: #ffd6d3;
+}
+
+/* ===== ADD BUTTONS ===== */
+.edit-recipe #add-ingredient,
+.edit-recipe #add-instruction,
+.edit-recipe #add-category {
+    margin-top: 10px;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.edit-recipe .btn-primary {
+    margin-top: 20px !important;
+    width: 100%;
+}
+
+.edit-recipe .btn-primary:hover {
+    transform: translateY(-2px);
+}
+
+/* ===== ERROR ===== */
+.edit-recipe p[style*="color:red"] {
+    background: #FFE5E3;
+    color: #FF3B30 !important;
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 480px) {
+    .edit-recipe form {
+        padding: 15px;
+        border-radius: 16px;
+    }
+}
 
 /* =========================================================
    TABLET
