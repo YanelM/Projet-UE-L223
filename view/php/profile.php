@@ -1,7 +1,7 @@
 <?php
-$pageTitle = "Profile";
-require_once 'header.php';
-$user = $_SESSION['user'];
+$pageTitle = "Profile"; // Titre de la page
+require_once 'header.php'; // Inclut l'en-tête
+$user = $_SESSION['user']; // Récupère l'utilisateur connecté
 ?>
 
 <div class="container">
@@ -10,14 +10,14 @@ $user = $_SESSION['user'];
 
         <div class="avatar">
             <?php if (!empty($user['avatar'])): ?>
-                <img src="<?= SITE_URL . $user['avatar'] ?>" class="avatar-img">
+                <img src="<?= SITE_URL . $user['avatar'] ?>" class="avatar-img"> <!-- Avatar utilisateur -->
             <?php else: ?>
-                👩‍🍳
+                👩‍🍳 <!-- Icône par défaut -->
             <?php endif; ?>
         </div>
 
-        <h2><?= htmlspecialchars($user['username']) ?></h2>
-        <p><?= htmlspecialchars($user['email']) ?></p>
+        <h2><?= htmlspecialchars($user['username']) ?></h2> <!-- Nom utilisateur -->
+        <p><?= htmlspecialchars($user['email']) ?></p> <!-- Email utilisateur -->
 
     </div>
 
@@ -25,25 +25,25 @@ $user = $_SESSION['user'];
     <div class="profile-menu-vertical">
 
         <a href="index.php?page=profile_recipes&type=favorites" class="profile-item">
-            ❤️ Favorites
+            ❤️ Favorites <!-- Recettes favorites -->
         </a>
 
         <a href="index.php?page=profile_recipes&type=my_recipes" class="profile-item">
-            📖 My recipes
+            📖 My recipes <!-- Mes recettes -->
         </a>
 
         <a href="index.php?page=profile_recipes&type=history" class="profile-item">
-            🕒 History
+            🕒 History <!-- Historique -->
         </a>
 
     </div>
 
     <!-- ACTIONS -->
     <div class="profile-actions">
-        <a href="index.php?page=edit_profile" class="btn btn-primary">Edit</a>
-        <a href="index.php?page=logout" class="btn btn-danger">Log out</a>
+        <a href="index.php?page=edit_profile" class="btn btn-primary">Edit</a> <!-- Modifier profil -->
+        <a href="index.php?page=logout" class="btn btn-danger">Log out</a> <!-- Déconnexion -->
     </div>
 
 </div>
 
-<?php require_once 'footer.php'; ?>
+<?php require_once 'footer.php'; ?> <!-- Pied de page -->

@@ -1,9 +1,13 @@
 <?php
-require_once 'Database.php';
+require_once 'Database.php'; // inclut la classe Database pour la connexion PDO
 
 class Recipe {
 
-    // Crée une nouvelle recette
+    /* ============================================================
+       Crée une nouvelle recette
+       $data : tableau contenant title, description, category, difficulty, ingredients, instructions, prep_time, cook_time, servings, image
+       $user_id : id de l'utilisateur qui crée la recette
+    ============================================================ */
     public static function create($data, $user_id) {
         $stmt = Database::getInstance()->prepare(
             "INSERT INTO recipes 
@@ -11,13 +15,14 @@ class Recipe {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
         );
 
-        // s'assurer que category est un tableau
+        // s'assurer que category est toujours un tableau
         $categories = is_array($data['category']) ? $data['category'] : [$data['category']];
 
+        // exécution avec toutes les données
         return $stmt->execute([
             $data['title'],
             $data['description'],
-            implode(',', $categories),
+            implode(',', $categories), // stocke les catégories en CSV
             $data['difficulty'],
             $data['ingredients'],
             $data['instructions'],
@@ -29,7 +34,10 @@ class Recipe {
         ]);
     }
 
-    // Retourne toutes les recettes avec filtres optionnels
+    /* ============================================================
+       Retourne toutes les recettes avec filtres optionnels
+       $filters peut contenir 'category' et 'search'
+    ============================================================ */
     public static function all($filters = []) {
         $sql = "
             SELECT r.*, u.username, COUNT(f.id) as likes
@@ -38,16 +46,15 @@ class Recipe {
             LEFT JOIN recipe_favorites f ON r.id = f.recipe_id
             WHERE 1
         ";
-
         $params = [];
 
-        // Filtre catégorie
+        // filtre par catégorie
         if (!empty($filters['category'])) {
             $sql .= " AND FIND_IN_SET(?, r.category)";
             $params[] = $filters['category'];
         }
 
-        // Filtre recherche
+        // filtre par recherche texte
         if (!empty($filters['search'])) {
             $sql .= " AND (r.title LIKE ? OR r.description LIKE ?)";
             $params[] = "%" . $filters['search'] . "%";
@@ -61,7 +68,9 @@ class Recipe {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Retourne une recette par son ID
+    /* ============================================================
+       Récupère une recette par son ID
+    ============================================================ */
     public static function find($id) {
         $stmt = Database::getInstance()->prepare(
             "SELECT r.*, u.username FROM recipes r 
@@ -72,7 +81,10 @@ class Recipe {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Retourne toutes les catégories uniques (même stockées en CSV)
+    /* ============================================================
+       Retourne toutes les catégories uniques utilisées
+       Même si stockées en CSV
+    ============================================================ */
     public static function categories() {
         $stmt = Database::getInstance()->query("SELECT DISTINCT category FROM recipes");
         $cats = [];
@@ -85,9 +97,11 @@ class Recipe {
         return array_values($cats);
     }
 
+    /* ============================================================
+       Recettes les plus récentes, limite paramétrable
+    ============================================================ */
     public static function latest($limit = 5) {
         $limit = (int)$limit;
-
         $stmt = Database::getInstance()->prepare("
             SELECT r.*, u.username, COUNT(f.id) as likes
             FROM recipes r
@@ -101,7 +115,9 @@ class Recipe {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Recettes favorites de l’utilisateur
+    /* ============================================================
+       Recettes favorites d’un utilisateur
+    ============================================================ */
     public static function favorites($user_id) {
         $stmt = Database::getInstance()->prepare("
             SELECT r.*, u.username, COUNT(f2.id) as likes
@@ -117,7 +133,9 @@ class Recipe {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Recettes postées par l’utilisateur
+    /* ============================================================
+       Recettes créées par un utilisateur
+    ============================================================ */
     public static function byUser($user_id) {
         $stmt = Database::getInstance()->prepare("
             SELECT r.*, u.username, COUNT(f.id) as likes
@@ -132,10 +150,11 @@ class Recipe {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Historique des 20 dernières vues
+    /* ============================================================
+       Historique des dernières vues d’un utilisateur (limite 20)
+    ============================================================ */
     public static function history($user_id, $limit = 20) {
         $limit = (int)$limit;
-
         $stmt = Database::getInstance()->prepare("
             SELECT r.*, u.username, MAX(v.viewed_at) AS last_viewed
             FROM recipe_views v
@@ -146,14 +165,15 @@ class Recipe {
             ORDER BY last_viewed DESC
             LIMIT $limit
         ");
-
         $stmt->execute([$user_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /* ============================================================
+       Met à jour une recette existante
+    ============================================================ */
     public static function update($id, $data) {
         $categories = is_array($data['category']) ? $data['category'] : [$data['category']];
-
         $stmt = Database::getInstance()->prepare("
             UPDATE recipes SET
                 title = ?,
@@ -168,7 +188,6 @@ class Recipe {
                 image = ?
             WHERE id = ?
         ");
-
         return $stmt->execute([
             $data['title'],
             $data['description'],
@@ -184,11 +203,17 @@ class Recipe {
         ]);
     }
 
+    /* ============================================================
+       Supprime une recette par son ID
+    ============================================================ */
     public static function delete($id) {
         $stmt = Database::getInstance()->prepare("DELETE FROM recipes WHERE id = ?");
         return $stmt->execute([$id]);
     }
 
+    /* ============================================================
+       Ajouter ou supprimer des favoris
+    ============================================================ */
     public static function addFavorite($user_id, $recipe_id) {
         $stmt = Database::getInstance()->prepare("
             INSERT IGNORE INTO recipe_favorites (user_id, recipe_id) VALUES (?, ?)
@@ -203,6 +228,9 @@ class Recipe {
         return $stmt->execute([$user_id, $recipe_id]);
     }
 
+    /* ============================================================
+       Compte le nombre total de favoris d’une recette
+    ============================================================ */
     public static function countFavorites($recipe_id) {
         $stmt = Database::getInstance()->prepare("
             SELECT COUNT(*) as total FROM recipe_favorites WHERE recipe_id = ?
@@ -211,6 +239,9 @@ class Recipe {
         return (int)$stmt->fetchColumn();
     }
 
+    /* ============================================================
+       Recettes favorites d’un utilisateur (version détaillée)
+    ============================================================ */
     public static function favoritesByUser($user_id) {
         $stmt = Database::getInstance()->prepare("
             SELECT r.*, u.username
@@ -224,9 +255,11 @@ class Recipe {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /* ============================================================
+       Recettes les plus populaires (par nombre de likes)
+    ============================================================ */
     public static function popular($limit = 3) {
         $limit = (int)$limit;
-
         $stmt = Database::getInstance()->prepare("
             SELECT r.*, u.username, COUNT(f.id) as likes
             FROM recipes r
@@ -236,7 +269,6 @@ class Recipe {
             ORDER BY likes DESC
             LIMIT $limit
         ");
-
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

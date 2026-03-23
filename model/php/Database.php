@@ -1,15 +1,19 @@
 <?php
-// Database configuration OVH
-define('DB_HOST', 'localhost'); define('DB_NAME', 'cooknshare'); define('DB_USER', 'root'); define('DB_PASS', '');
+// Config DB
+define('DB_HOST', 'localhost');   // serveur
+define('DB_NAME', 'cooknshare');  // nom base
+define('DB_USER', 'root');        // utilisateur
+define('DB_PASS', '');            // mot de passe
 
-// Website URL (URL de ton vrai site en ligne)
+// URL du site
 define('SITE_URL', 'http://localhost:223/Projet-UE-L223/'); 
 
-// Le reste de ta classe Database ne change pas...
+// Classe singleton pour PDO
 class Database {
-    private static ?Database $instance = null;
-    private PDO $pdo;
+    private static ?Database $instance = null; // instance unique
+    private PDO $pdo;                           // objet PDO
 
+    // Constructeur privé pour éviter plusieurs instances
     private function __construct() {
         try {
             $this->pdo = new PDO(
@@ -17,16 +21,17 @@ class Database {
                 DB_USER,
                 DB_PASS
             );
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // erreurs en exception
         } catch (PDOException $e) {
-            die("Database connection failed: " . $e->getMessage());
+            die("Database connection failed: " . $e->getMessage()); // stop si erreur
         }
     }
 
+    // Retourne l'instance PDO
     public static function getInstance(): PDO {
-        if (self::$instance === null) {
-            self::$instance = new self();
+        if (self::$instance === null) {          // si pas encore créée
+            self::$instance = new self();        // crée l'instance
         }
-        return self::$instance->pdo;
+        return self::$instance->pdo;             // retourne PDO
     }
 }

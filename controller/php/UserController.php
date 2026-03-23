@@ -1,8 +1,10 @@
 <?php
 require_once(__DIR__ . "/../../model/php/UserModel.php");
 
+// Contrôleur pour gérer les utilisateurs
 class UserController {
 
+    // Connexion utilisateur
     public function login() {
         if (session_status() === PHP_SESSION_NONE) session_start();
 
@@ -14,12 +16,12 @@ class UserController {
             $password = trim($_POST['password'] ?? '');
 
             if (!$email || !$password) {
-                $error = 'Please enter both email and password';
+                $error = 'Please enter both email and password'; // vérifie les champs
             } else {
-                $user = User::verify($email, $password);
+                $user = User::verify($email, $password);          // vérifie credentials
                 if ($user) {
-                    $_SESSION['user'] = $user;
-                    header("Location: index.php?page=recipes");
+                    $_SESSION['user'] = $user;                   // sauvegarde session
+                    header("Location: index.php?page=recipes"); // redirige
                     exit;
                 } else {
                     $error = 'Invalid credentials';
@@ -27,12 +29,12 @@ class UserController {
             }
         }
 
-        include(__DIR__ . "/../../view/php/login.php");
+        include(__DIR__ . "/../../view/php/login.php"); // affiche le formulaire
     }
 
+    // Inscription utilisateur
     public function register() {
         if (session_status() === PHP_SESSION_NONE) session_start();
-
         $error = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -40,6 +42,7 @@ class UserController {
             $email = trim($_POST['email'] ?? '');
             $password = trim($_POST['password'] ?? '');
 
+            // validation simple
             if (!$username || !$email || !$password) {
                 $error = 'All fields are required';
             } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -47,59 +50,53 @@ class UserController {
             } elseif (User::findByEmail($email)) {
                 $error = 'Email already exists';
             } else {
-                User::create($username, $email, $password);
-                header("Location: index.php?page=login&success=1");
+                User::create($username, $email, $password); // crée l'utilisateur
+                header("Location: index.php?page=login&success=1"); // redirige login
                 exit;
             }
         }
 
-        include(__DIR__ . "/../../view/php/register.php");
+        include(__DIR__ . "/../../view/php/register.php"); // affiche formulaire
     }
 
+    // Déconnexion
     public function logout() {
         if (session_status() === PHP_SESSION_NONE) session_start();
-        session_destroy();
-        header("Location: index.php");
+        session_destroy(); // détruit session
+        header("Location: index.php"); // redirige accueil
         exit;
     }
 
+    // Profil personnel
     public function profile() {
         if (session_status() === PHP_SESSION_NONE) session_start();
-
         if (!isset($_SESSION['user'])) {
-            header("Location: index.php?page=login");
+            header("Location: index.php?page=login"); // redirige si non connecté
             exit;
         }
-
-        include(__DIR__ . "/../../view/php/profile.php");
+        include(__DIR__ . "/../../view/php/profile.php"); // affiche profil
     }
 
+    // Affiche recettes liées au profil
     public function profileRecipes() {
         if (session_status() === PHP_SESSION_NONE) session_start();
-
         $user = $_SESSION['user'] ?? null;
-
-        if (!$user) {
-            header("Location: index.php?page=login");
-            exit;
-        }
+        if (!$user) header("Location: index.php?page=login");
 
         $type = $_GET['type'] ?? 'favorites';
 
         switch($type) {
             case 'my_recipes':
-                $recipes = Recipe::byUser($user['id']);
+                $recipes = Recipe::byUser($user['id']); // mes recettes
                 $title = "My Recipes";
                 break;
-
             case 'history':
-                $recipes = Recipe::history($user['id']);
+                $recipes = Recipe::history($user['id']); // historique
                 $title = "History";
                 break;
-
             case 'favorites':
             default:
-                $recipes = Recipe::favorites($user['id']);
+                $recipes = Recipe::favorites($user['id']); // favoris
                 $title = "Favorites";
                 break;
         }
@@ -107,15 +104,11 @@ class UserController {
         include(__DIR__ . "/../../view/php/profile_recipes.php");
     }
 
+    // Modifier profil
     public function editProfile() {
         if (session_status() === PHP_SESSION_NONE) session_start();
-
         $user = $_SESSION['user'] ?? null;
-
-        if (!$user) {
-            header("Location: index.php?page=login");
-            exit;
-        }
+        if (!$user) header("Location: index.php?page=login");
 
         $error = '';
         $success = false;
@@ -125,36 +118,28 @@ class UserController {
             $email    = trim($_POST['email']);
             $phone    = trim($_POST['phone']);
 
-            if (!$username || !$email) {
-                $error = "Name and email are required.";
-            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $error = "Invalid email.";
-            } else {
-
+            if (!$username || !$email) $error = "Name and email are required.";
+            elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $error = "Invalid email.";
+            else {
                 $avatarPath = null;
 
-                // upload image
+                // upload avatar
                 if (!empty($_FILES['avatar']['name'])) {
                     $uploadDir = 'uploads/';
                     if (!is_dir($uploadDir)) mkdir($uploadDir);
-
                     $filename = time() . '_' . basename($_FILES['avatar']['name']);
                     $target = $uploadDir . $filename;
-
                     move_uploaded_file($_FILES['avatar']['tmp_name'], $target);
                     $avatarPath = $target;
                 }
 
-                User::updateFull($user['id'], $username, $email, $phone, $avatarPath);
+                User::updateFull($user['id'], $username, $email, $phone, $avatarPath); // update DB
 
                 // update session
                 $_SESSION['user']['username'] = $username;
                 $_SESSION['user']['email'] = $email;
                 $_SESSION['user']['phone'] = $phone;
-
-                if ($avatarPath) {
-                    $_SESSION['user']['avatar'] = $avatarPath;
-                }
+                if ($avatarPath) $_SESSION['user']['avatar'] = $avatarPath;
 
                 $success = true;
             }
@@ -163,58 +148,37 @@ class UserController {
         include(__DIR__ . "/../../view/php/edit_profile.php");
     }
 
+    // Profil public d'un autre utilisateur
     public function publicProfile() {
         if (session_status() === PHP_SESSION_NONE) session_start();
-
         $id = $_GET['id'] ?? null;
-
-        if (!$id) {
-            header("Location: index.php");
-            exit;
-        }
+        if (!$id) header("Location: index.php");
 
         $user = User::findById($id);
+        if (!$user) { echo "User not found"; exit; }
 
-        if (!$user) {
-            echo "User not found";
-            exit;
-        }
-
-        // recettes de cet utilisateur
-        $recipes = Recipe::byUser($id);
-
-        // likes
-        $likesCount = User::totalLikes($id);
-
-        $isLiked = false;
-        if (isset($_SESSION['user'])) {
-            $isLiked = User::isLiked($_SESSION['user']['id'], $id);
-        }
+        $recipes = Recipe::byUser($id);              // recettes
+        $likesCount = User::totalLikes($id);         // nombre de likes
+        $isLiked = isset($_SESSION['user']) && User::isLiked($_SESSION['user']['id'], $id);
 
         include(__DIR__ . "/../../view/php/public_profile.php");
     }
 
+    // Ajouter/retirer like sur un utilisateur
     public function toggleLike() {
-        if (!isset($_SESSION['user'])) {
-            header("Location: index.php?page=login");
-            exit;
-        }
+        if (!isset($_SESSION['user'])) header("Location: index.php?page=login");
 
         $user_id = $_SESSION['user']['id'];
         $target_user_id = $_GET['id'] ?? 0;
 
-        if (!$target_user_id || $target_user_id == $user_id) {
+        if (!$target_user_id || $target_user_id == $user_id)
             header("Location: index.php?page=recipes");
-            exit;
-        }
 
-        if (User::isLiked($user_id, $target_user_id)) {
-            User::removeLike($user_id, $target_user_id);
-        } else {
-            User::addLike($user_id, $target_user_id);
-        }
+        if (User::isLiked($user_id, $target_user_id))
+            User::removeLike($user_id, $target_user_id); // retire like
+        else
+            User::addLike($user_id, $target_user_id);    // ajoute like
 
-        // Redirection vers le profil public
         header("Location: index.php?page=public_profile&id=$target_user_id");
         exit;
     }

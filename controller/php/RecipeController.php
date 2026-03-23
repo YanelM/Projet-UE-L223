@@ -1,354 +1,198 @@
 <?php
 require_once(__DIR__ . "/../../model/php/RecipeModel.php");
+
+// Contrôleur pour gérer les recettes
 class RecipeController {
 
+    // Liste toutes les recettes avec filtres
     public function list() {
         $selectedCat = $_GET['category'] ?? '';
         $search      = trim($_GET['search'] ?? '');
 
-        $filters = [
-            'category' => $selectedCat,
-            'search'   => $search,
-        ];
+        $filters = ['category'=>$selectedCat, 'search'=>$search];
 
-        // Récupérer les recettes filtrées
-        $recipes = Recipe::all($filters);
+        $recipes = Recipe::all($filters);      // récupère recettes filtrées
+        $categories = Recipe::categories();    // récupère toutes catégories
 
-        // Récupérer les catégories existantes
-        $categories = Recipe::categories();
-
-        // Préparer les icônes pour chaque recette
-        $categoryIcons = [
-            'Pasta'       => '🍝',
-            'Vegetarian'  => '🥗',
-            'Dessert'     => '🍰',
-            'Soup'        => '🍲',
-            'Seafood'     => '🦞',
-            'Meat'        => '🥩',
-            'Breakfast'   => '🥞',
-            'Salad'       => '🥙',
-        ];
+        // icônes par catégorie
+        $categoryIcons = ['Pasta'=>'🍝','Vegetarian'=>'🥗','Dessert'=>'🍰','Soup'=>'🍲','Seafood'=>'🦞','Meat'=>'🥩','Breakfast'=>'🥞','Salad'=>'🥙'];
 
         foreach ($recipes as &$r) {
             $r['icon'] = $categoryIcons[$r['category']] ?? '🍽️';
             $r['totalTime'] = ($r['prep_time'] ?? 0) + ($r['cook_time'] ?? 0);
         }
 
-        include(__DIR__ . "/../../view/php/recipes.php");
+        include(__DIR__ . "/../../view/php/recipes.php"); // affiche page recettes
     }
 
+    // Affiche une recette unique
     public function view() {
         $id = $_GET['id'] ?? 0;
-        $recipe = Recipe::find($id);
+        $recipe = Recipe::find($id);  // récupère la recette
 
-        // Rediriger si la recette n'existe pas
-        if (!$recipe) {
-            header("Location: index.php?page=recipes");
-            exit;
-        }
+        if (!$recipe) { header("Location: index.php?page=recipes"); exit; }
 
-        // Historique
+        // historique des vues si connecté
         if (isset($_SESSION['user'])) {
-            $stmt = Database::getInstance()->prepare("
-                INSERT INTO recipe_views (user_id, recipe_id) VALUES (?, ?)
-            ");
+            $stmt = Database::getInstance()->prepare("INSERT INTO recipe_views (user_id, recipe_id) VALUES (?, ?)");
             $stmt->execute([$_SESSION['user']['id'], $id]);
         }
 
-        // 🔥 AJOUT : charger les commentaires
+        // charger commentaires
         require_once(__DIR__ . "/../../model/php/CommentModel.php");
         $comments = Comment::byRecipe($id);
 
-        // UI data
-        $categoryIcons = [
-            'Pasta' => '🍝', 'Vegetarian' => '🥗', 'Dessert' => '🍰',
-            'Soup'  => '🍲', 'Seafood' => '🦞', 'Meat' => '🥩',
-            'Breakfast' => '🥞', 'Salad' => '🥙',
-        ];
-
+        // données UI
+        $categoryIcons = ['Pasta'=>'🍝','Vegetarian'=>'🥗','Dessert'=>'🍰','Soup'=>'🍲','Seafood'=>'🦞','Meat'=>'🥩','Breakfast'=>'🥞','Salad'=>'🥙'];
         $icon = $categoryIcons[$recipe['category']] ?? '🍽️';
         $totalTime = ($recipe['prep_time'] ?? 0) + ($recipe['cook_time'] ?? 0);
         $ingredients  = array_filter(array_map('trim', explode("\n", $recipe['ingredients'] ?? '')));
         $instructions = array_filter(array_map('trim', explode("\n", $recipe['instructions'] ?? '')));
 
-        include(__DIR__ . "/../../view/php/recipe.php");
+        include(__DIR__ . "/../../view/php/recipe.php"); // affiche recette
     }
 
+    // Ajouter une nouvelle recette
     public function add() {
-        if (!isset($_SESSION['user'])) {
-            header("Location: index.php?page=login");
-            exit;
-        }
+        if (!isset($_SESSION['user'])) { header("Location: index.php?page=login"); exit; }
 
-        $error = '';
-        $success = false;
+        $error = ''; $success = false;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $title        = trim($_POST['title'] ?? '');
-            $description  = trim($_POST['description'] ?? '');
-            $categories   = $_POST['category'] ?? [];
-            $difficulty   = $_POST['difficulty'] ?? 'easy';
-            $prep_time    = (int)($_POST['prep_time'] ?? 0);
-            $servings     = (int)($_POST['servings'] ?? 0);
+            $title = trim($_POST['title'] ?? '');
+            $description = trim($_POST['description'] ?? '');
+            $categories = $_POST['category'] ?? [];
+            $difficulty = $_POST['difficulty'] ?? 'easy';
+            $prep_time = (int)($_POST['prep_time'] ?? 0);
+            $servings = (int)($_POST['servings'] ?? 0);
 
-            // 🔹 Gestion des ingrédients et instructions dynamiques
-            $ingredients  = isset($_POST['ingredients']) && is_array($_POST['ingredients'])
-                ? implode("\n", array_map('trim', $_POST['ingredients']))
-                : '';
-            $instructions = isset($_POST['instructions']) && is_array($_POST['instructions'])
-                ? implode("\n", array_map('trim', $_POST['instructions']))
-                : '';
+            // ingrédients et instructions
+            $ingredients = isset($_POST['ingredients']) ? implode("\n", array_map('trim', $_POST['ingredients'])) : '';
+            $instructions = isset($_POST['instructions']) ? implode("\n", array_map('trim', $_POST['instructions'])) : '';
 
-            // Validation des champs obligatoires
-            if (empty($title) || empty($ingredients) || empty($instructions)) {
+            if (empty($title) || empty($ingredients) || empty($instructions))
                 $error = "Please fill in the required fields (title, ingredients, instructions).";
-            }
 
-            // Validation des catégories
-            $allowed_cats = [
-                'Breakfast','Brunch','Appetizer','Soup','Salad','Pasta','Rice & Grains',
-                'Vegetarian','Vegan','Meat','Poultry','Seafood','Dessert',
-                'Snack','Side dish','Sauce','Beverage','Other'
-            ];
+            // validation catégories
+            $allowed_cats = ['Breakfast','Brunch','Appetizer','Soup','Salad','Pasta','Rice & Grains','Vegetarian','Vegan','Meat','Poultry','Seafood','Dessert','Snack','Side dish','Sauce','Beverage','Other'];
+            foreach ($categories as $cat) if ($cat!=='' && !in_array($cat,$allowed_cats)) { $error="Invalid category"; break; }
 
-            foreach ($categories as $cat) {
-                if ($cat !== '' && !in_array($cat, $allowed_cats)) {
-                    $error = "One of the selected categories is invalid.";
-                    break;
-                }
-            }
-
-            // 🔹 Gestion de l'image
-            $imagePath = null;
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-
-            if (!empty($_FILES['image']['name'])) {
-                if (in_array($_FILES['image']['type'], $allowedTypes)) {
-                    $uploadDir = 'uploads/recipes/';
-                    if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
-
-                    $filename = uniqid() . '_' . basename($_FILES['image']['name']);
-                    $target = $uploadDir . $filename;
-
-                    move_uploaded_file($_FILES['image']['tmp_name'], $target);
-                    $imagePath = $target;
-                }
+            // upload image
+            $imagePath = null; $allowedTypes=['image/jpeg','image/png','image/webp'];
+            if (!empty($_FILES['image']['name']) && in_array($_FILES['image']['type'],$allowedTypes)) {
+                $uploadDir='uploads/recipes/'; if(!is_dir($uploadDir)) mkdir($uploadDir,0777,true);
+                $filename=uniqid().'_'.basename($_FILES['image']['name']);
+                move_uploaded_file($_FILES['image']['tmp_name'],$uploadDir.$filename);
+                $imagePath=$uploadDir.$filename;
             }
 
             if (!$error) {
-                // Crée la recette via le modèle
                 Recipe::create([
-                    'image'        => $imagePath,
-                    'title'        => $title,
-                    'description'  => $description,
-                    'category'     => $categories,
-                    'difficulty'   => $difficulty,
-                    'ingredients'  => $ingredients,
-                    'instructions' => $instructions,
-                    'prep_time'    => $prep_time,
-                    'servings'     => $servings
-                ], $_SESSION['user']['id']);
-
-                // Redirection pour éviter le double POST
-                header("Location: index.php?page=recipes");
-                exit;
+                    'image'=>$imagePath,'title'=>$title,'description'=>$description,'category'=>$categories,
+                    'difficulty'=>$difficulty,'ingredients'=>$ingredients,'instructions'=>$instructions,
+                    'prep_time'=>$prep_time,'servings'=>$servings
+                ],$_SESSION['user']['id']);
+                header("Location: index.php?page=recipes"); exit;
             }
         }
 
-        // Préparer les catégories pour le formulaire
-        $cats = [
-            'Breakfast','Brunch','Appetizer','Soup','Salad','Pasta','Rice & Grains',
-            'Vegetarian','Vegan','Meat','Poultry','Seafood','Dessert',
-            'Snack','Side dish','Sauce','Beverage',
-            'Gluten-Free','Nut-Free','Dairy-Free','Egg-Free','Soy-Free','Shellfish-Free',
-            'Low Sugar','Low Carb','High Protein','Spicy','Kid-Friendly','Quick & Easy',
-            'Organic','Fermented','Raw','Whole Grain','Comfort Food','Street Food',
-            'BBQ','Grilled','Baked','Fried','Steamed','Slow-Cooked','Roasted',
-            'Smoothie','Juice','Tea','Coffee','Cocktail','Mocktail','Water','Milkshake',
-            'Breakfast Sandwich','Bagel','Pancakes','Waffles','Omelette','Cereal','Granola',
-            'Soup & Stew','Salad Bowl','Pasta Dish','Risotto','Curry','Stir-Fry','Pizza',
-            'Burger','Sandwich','Wrap','Taco','Sushi','Seafood Platter','Charcuterie',
-            'Dessert Cake','Ice Cream','Cookie','Brownie','Pie','Pudding','Chocolate',
-            'Vegan Dessert','Fruit Salad','Energy Bar','Trail Mix','Chips','Popcorn',
-            'Vegetable Side','Potato Side','Rice Side','Bread & Roll','Sauce & Dressing',
-            'Condiment','Dip','Smoothie Bowl','Herbal Tea','Iced Tea','Soft Drink','Beer','Wine','Other'
-        ];
-
-        include(__DIR__ . "/../../view/php/add_recipe.php");
+        // catégories pour le formulaire
+        $cats = ['Breakfast','Brunch','Appetizer','Soup','Salad','Pasta','Rice & Grains','Vegetarian','Vegan','Meat','Poultry','Seafood','Dessert','Snack','Side dish','Sauce','Beverage','Other'];
+        include(__DIR__ . "/../../view/php/add_recipe.php"); // affiche form
     }
 
+    // Modifier recette existante
     public function edit() {
-        if (!isset($_SESSION['user'])) {
-            header("Location: index.php?page=login");
-            exit;
-        }
+        if (!isset($_SESSION['user'])) { header("Location: index.php?page=login"); exit; }
 
         $id = $_GET['id'] ?? 0;
         $recipe = Recipe::find($id);
-
-        // Vérifier que la recette existe et appartient à l'utilisateur
-        if (!$recipe || $recipe['user_id'] != $_SESSION['user']['id']) {
+        if (!$recipe || $recipe['user_id'] != $_SESSION['user']['id'])
             header("Location: index.php?page=profile&view=my_recipes");
-            exit;
-        }
 
-        $error = '';
-        $imagePath = $recipe['image']; // garder l'ancienne image par défaut
+        $error = ''; $imagePath = $recipe['image'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $title       = trim($_POST['title'] ?? '');
+            $title = trim($_POST['title'] ?? '');
             $description = trim($_POST['description'] ?? '');
-            $categories  = $_POST['category'] ?? [];
-            $difficulty  = $_POST['difficulty'] ?? 'easy';
+            $categories = $_POST['category'] ?? [];
+            $difficulty = $_POST['difficulty'] ?? 'easy';
 
-            // Ingrédients et instructions sous forme de tableau
-            $ingredientsArray  = $_POST['ingredients'] ?? [];
-            $instructionsArray = $_POST['instructions'] ?? [];
-
-            // Nettoyer chaque élément
-            $ingredients  = array_map('trim', $ingredientsArray);
-            $instructions = array_map('trim', $instructionsArray);
-
-            // Convertir en texte avec retour à la ligne
-            $ingredientsStr  = implode("\n", $ingredients);
-            $instructionsStr = implode("\n", $instructions);
+            $ingredients = implode("\n", array_map('trim', $_POST['ingredients'] ?? []));
+            $instructions = implode("\n", array_map('trim', $_POST['instructions'] ?? []));
 
             $prep_time = (int)($_POST['prep_time'] ?? 0);
             $cook_time = (int)($_POST['cook_time'] ?? 0);
-            $servings  = (int)($_POST['servings'] ?? 0);
+            $servings = (int)($_POST['servings'] ?? 0);
 
-            // Vérification des champs obligatoires
-            if (empty($title) || empty($ingredientsStr) || empty($instructionsStr)) {
+            if (empty($title) || empty($ingredients) || empty($instructions))
                 $error = "Please fill in the required fields.";
-            }
 
-            // Gestion upload image
+            // upload nouvelle image
             if (!empty($_FILES['image']['name'])) {
-                $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-
-                if (in_array($_FILES['image']['type'], $allowedTypes)) {
-                    $uploadDir = 'uploads/recipes/';
-                    if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
-
-                    $filename = uniqid() . '_' . basename($_FILES['image']['name']);
-                    $target = $uploadDir . $filename;
-
-                    move_uploaded_file($_FILES['image']['tmp_name'], $target);
-
-                    $imagePath = $target;
+                $allowedTypes = ['image/jpeg','image/png','image/webp'];
+                if (in_array($_FILES['image']['type'],$allowedTypes)) {
+                    $uploadDir='uploads/recipes/'; if(!is_dir($uploadDir)) mkdir($uploadDir,0777,true);
+                    $filename=uniqid().'_'.basename($_FILES['image']['name']);
+                    move_uploaded_file($_FILES['image']['tmp_name'],$uploadDir.$filename);
+                    $imagePath=$uploadDir.$filename;
                 }
             }
-
-            if (!empty($_POST['delete_image'])) {
-                $imagePath = null;
-            }
+            if (!empty($_POST['delete_image'])) $imagePath=null;
 
             if (!$error) {
-                Recipe::update($id, [
-                    'image'        => $imagePath,
-                    'title'        => $title,
-                    'description'  => $description,
-                    'category'     => implode(',', $categories), // ou JSON si tu veux
-                    'difficulty'   => $difficulty,
-                    'ingredients'  => $ingredientsStr,
-                    'instructions' => $instructionsStr,
-                    'prep_time'    => $prep_time,
-                    'cook_time'    => $cook_time,
-                    'servings'     => $servings
+                Recipe::update($id,[
+                    'image'=>$imagePath,'title'=>$title,'description'=>$description,
+                    'category'=>implode(',',$categories),'difficulty'=>$difficulty,
+                    'ingredients'=>$ingredients,'instructions'=>$instructions,
+                    'prep_time'=>$prep_time,'cook_time'=>$cook_time,'servings'=>$servings
                 ]);
-
-                // Redirection vers la page recette après modification
-                header("Location: index.php?page=recipe&id=$id&success=1");
-                exit;
+                header("Location: index.php?page=recipe&id=$id&success=1"); exit;
             }
         }
 
-        // Liste des catégories possibles
-        $cats = [
-            'Breakfast','Brunch','Appetizer','Soup','Salad','Pasta','Rice & Grains',
-            'Vegetarian','Vegan','Meat','Poultry','Seafood','Dessert',
-            'Snack','Side dish','Sauce','Beverage',
-            'Gluten-Free','Nut-Free','Dairy-Free','Egg-Free','Soy-Free','Shellfish-Free',
-            'Low Sugar','Low Carb','High Protein','Spicy','Kid-Friendly','Quick & Easy',
-            'Organic','Fermented','Raw','Whole Grain','Comfort Food','Street Food',
-            'BBQ','Grilled','Baked','Fried','Steamed','Slow-Cooked','Roasted',
-            'Smoothie','Juice','Tea','Coffee','Cocktail','Mocktail','Water','Milkshake',
-            'Breakfast Sandwich','Bagel','Pancakes','Waffles','Omelette','Cereal','Granola',
-            'Soup & Stew','Salad Bowl','Pasta Dish','Risotto','Curry','Stir-Fry','Pizza',
-            'Burger','Sandwich','Wrap','Taco','Sushi','Seafood Platter','Charcuterie',
-            'Dessert Cake','Ice Cream','Cookie','Brownie','Pie','Pudding','Chocolate',
-            'Vegan Dessert','Fruit Salad','Energy Bar','Trail Mix','Chips','Popcorn',
-            'Vegetable Side','Potato Side','Rice Side','Bread & Roll','Sauce & Dressing',
-            'Condiment','Dip','Smoothie Bowl','Herbal Tea','Iced Tea','Soft Drink','Beer','Wine','Other'
-        ];
-
-        include(__DIR__ . "/../../view/php/edit_recipe.php");
+        $cats = ['Breakfast','Brunch','Appetizer','Soup','Salad','Pasta','Rice & Grains','Vegetarian','Vegan','Meat','Poultry','Seafood','Dessert','Snack','Side dish','Sauce','Beverage','Other'];
+        include(__DIR__ . "/../../view/php/edit_recipe.php"); // affiche form
     }
 
+    // Supprimer une recette
     public function delete() {
-        if (!isset($_SESSION['user'])) {
-            header("Location: index.php?page=login");
-            exit;
-        }
+        if (!isset($_SESSION['user'])) { header("Location: index.php?page=login"); exit; }
 
         $id = $_GET['id'] ?? 0;
         $recipe = Recipe::find($id);
-
-        if (!$recipe || $recipe['user_id'] != $_SESSION['user']['id']) {
+        if (!$recipe || $recipe['user_id'] != $_SESSION['user']['id'])
             header("Location: index.php?page=profile&view=my_recipes");
-            exit;
-        }
 
-        // Vérifier si la recette est en favori de quelqu'un
-        $stmt = Database::getInstance()->prepare("
-            SELECT COUNT(*) FROM recipe_favorites WHERE recipe_id = ?
-        ");
-        $stmt->execute([$id]);
+        // vérifier si recette en favoris ou vue
+        $stmt = Database::getInstance()->prepare("SELECT COUNT(*) FROM recipe_favorites WHERE recipe_id=?"); $stmt->execute([$id]);
         $favoritesCount = (int)$stmt->fetchColumn();
-
-        // Vérifier si la recette a des vues
-        $stmt2 = Database::getInstance()->prepare("
-            SELECT COUNT(*) FROM recipe_views WHERE recipe_id = ?
-        ");
-        $stmt2->execute([$id]);
+        $stmt2 = Database::getInstance()->prepare("SELECT COUNT(*) FROM recipe_views WHERE recipe_id=?"); $stmt2->execute([$id]);
         $viewsCount = (int)$stmt2->fetchColumn();
 
-        if ($favoritesCount > 0 || $viewsCount > 0) {
-            $_SESSION['error'] = "You cannot delete this recipe because it is in someone's favorites or has views.";
-            header("Location: index.php?page=recipe&id=$id");
-            exit;
+        if ($favoritesCount>0 || $viewsCount>0) {
+            $_SESSION['error']="Cannot delete, recipe has favorites/views.";
+            header("Location: index.php?page=recipe&id=$id"); exit;
         }
 
-        // Suppression OK
-        Recipe::delete($id);
-
-        header("Location: index.php?page=profile&view=my_recipes");
-        exit;
+        Recipe::delete($id); // supprime recette
+        header("Location: index.php?page=profile&view=my_recipes"); exit;
     }
 
+    // Ajouter ou retirer une recette des favoris
     public function toggleFavorite() {
-        if (!isset($_SESSION['user'])) {
-            header("Location: index.php?page=login");
-            exit;
-        }
+        if (!isset($_SESSION['user'])) { header("Location: index.php?page=login"); exit; }
 
         $recipe_id = $_GET['id'] ?? 0;
         $user_id = $_SESSION['user']['id'];
 
-        // Vérifier si l'utilisateur a déjà mis la recette en favori
-        $stmt = Database::getInstance()->prepare("
-            SELECT * FROM recipe_favorites WHERE user_id = ? AND recipe_id = ?
-        ");
-        $stmt->execute([$user_id, $recipe_id]);
+        $stmt = Database::getInstance()->prepare("SELECT * FROM recipe_favorites WHERE user_id=? AND recipe_id=?");
+        $stmt->execute([$user_id,$recipe_id]);
         $exists = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($exists) {
-            Recipe::removeFavorite($user_id, $recipe_id);
-        } else {
-            Recipe::addFavorite($user_id, $recipe_id);
-        }
+        if ($exists) Recipe::removeFavorite($user_id,$recipe_id);
+        else Recipe::addFavorite($user_id,$recipe_id);
 
-        header("Location: index.php?page=recipe&id=$recipe_id");
-        exit;
+        header("Location: index.php?page=recipe&id=$recipe_id"); exit;
     }
 }
