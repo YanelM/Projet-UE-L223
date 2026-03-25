@@ -397,7 +397,7 @@ input[type="search"] {
     }
 
     .edit-profile h2, 
-    .edit-profile label[for="avatar"], 
+    .edit-profile label[for="avatar"], /* Si tu ajoutes un ID */
     .edit-profile input[name="avatar"],
     .edit-profile .success,
     .edit-profile .error,
@@ -418,6 +418,7 @@ input[type="search"] {
         gap: 1.25rem;
     }
 
+    /* On s'assure que les textareas et titres prennent toute la largeur */
     .edit-recipe textarea, 
     .edit-recipe h2,
     .edit-recipe .image-section {
@@ -425,20 +426,20 @@ input[type="search"] {
     }
 
     .bottom-nav {
-        display: none; 
+        display: none; /* Cache la navigation mobile sur PC */
     }
 
     .container {
-        padding-bottom: 2rem; 
+        padding-bottom: 2rem; /* Reset du padding du bas sur PC */
     }
 
-    .navbar {
+   .navbar {
         display: flex;
-        position: sticky;
+        position: sticky; 
         top: 0;
         z-index: 1100;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(0.625rem); /* 10px */
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(0.625rem); 
         border-bottom: 0.06rem solid var(--border);
         padding: 1rem 2rem;
         justify-content: space-between;
@@ -470,7 +471,7 @@ input[type="search"] {
         color: var(--primary);
     }
 
-    
+    /* Style spécifique pour le bouton Sign Up dans la nav desktop */
     .btn-nav {
         background: var(--primary);
         color: white !important;
@@ -484,8 +485,8 @@ input[type="search"] {
     }
 
     .container {
-        padding-top: 3rem; 
-        max-width: 75rem; 
+        padding-top: 3rem; /* Plus d'espace sur PC */
+        max-width: 75rem; /* 1200px */
         margin: 0 auto;
     }
 
@@ -504,7 +505,7 @@ input[type="search"] {
     /* Transformation de la liste en grille sur PC */
     .recipes-list {
         display: grid;
-        grid-template-columns: repeat(3, 1fr); 
+        grid-template-columns: repeat(3, 1fr); /* 3 colonnes */
         gap: 2rem;
         padding: 0;
     }
@@ -519,10 +520,11 @@ input[type="search"] {
     }
 
     .form-card {
-        max-width: 28.125rem; 
+        max-width: 28.125rem; /* 450px */
         padding: 3.5rem 3rem;
     }
     
+    /* Animation légère au survol du bouton */
     .btn-primary:hover {
         transform: translateY(-0.125rem);
         box-shadow: 0 0.5rem 1.25rem rgba(209, 81, 45, 0.3);
@@ -584,6 +586,7 @@ input[type="search"] {
         height: 6.25rem;
     }
 
+    /* On passe les recettes du chef sur 2 colonnes */
     .public-profile .recipes-list {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -597,19 +600,21 @@ input[type="search"] {
 
     .recipe-main-layout {
         display: grid;
-        grid-template-columns: 1fr 1fr; 
+        grid-template-columns: 1fr 1fr; /* 2 colonnes égales */
         gap: 3rem;
         align-items: start;
     }
 
     .recipe-detail-image {
-        height: 31.25rem; 
+        height: 31.25rem; /* 500px */
     }
 
+    /* On rend les onglets plus petits sur PC car il y a de la place */
     .tab-btn {
         max-width: 12.5rem;
     }
 
+    /* Les commentaires sur toute la largeur en dessous */
     .comments-section {
         margin-top: 3rem;
         max-width: 50rem;
@@ -628,10 +633,12 @@ input[type="search"] {
 
     .recipes-page-header form {
         width: auto;
+        gap: 0.75rem;
     }
 
     .recipes-page-header input[type="search"] {
-        width: 18.75rem; 
+        width: 25rem; 
+        flex: none; 
     }
 
     /* Grille de recettes */
@@ -641,6 +648,34 @@ input[type="search"] {
         gap: 2rem;
     }
 
+    .recipes-page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .recipes-page-header h1 {
+        margin-bottom: 0;
+    }
+
+    .recipes-page-header form {
+        width: auto;
+        gap: 0.75rem;
+    }
+
+    .recipes-page-header input[type="search"] {
+        width: 25rem; /* Taille fixe confortable sur PC (400px) */
+        flex: none;
+    }
+
+    .recipes-page-header .btn-primary {
+        width: auto;
+        flex: none;
+        padding: 0 2rem !important;
+    }
+
+    /* Filtres sur PC (plus besoin de scroller) */
     .filter-bar-wrapper {
         margin: 0 0 2.5rem 0;
         padding: 0;
@@ -648,18 +683,19 @@ input[type="search"] {
 
     .filter-bar {
         padding: 0;
-        flex-wrap: wrap; 
+        flex-wrap: wrap; /* On laisse les boutons aller à la ligne sur PC */
     }
 
     .form-card {
-        max-width: 30rem;
+        max-width: 30rem; /* 480px */
         padding: 3.5rem 3rem;
     }
 
     .form-card h2 {
-        font-size: 2.25rem; 
+        font-size: 2.25rem; /* 36px */
     }
 
+    /* Animation du bouton au survol sur PC */
     .btn-primary:hover {
         transform: translateY(-0.125rem);
         box-shadow: 0 0.5rem 1.25rem rgba(209, 81, 45, 0.25);
@@ -671,37 +707,37 @@ input[type="search"] {
    ========================================================= */
 
 .add-recipe-page {
-    padding-bottom: 6.25rem; 
+    padding-bottom: 6.25rem; /* 100px */
 }
 
 /* Header de la page */
 .add-recipe-page .page-header {
-    margin-bottom: 1.56rem; 
+    margin-bottom: 1.56rem; /* ~25px */
 }
 
 .add-recipe-page h1 {
-    font-size: 1.625rem; 
+    font-size: 1.625rem; /* 26px */
     font-weight: 700;
     color: var(--text);
 }
 
 .add-recipe-page .page-header p {
     color: var(--muted);
-    font-size: 0.875rem; 
+    font-size: 0.875rem; /* 14px */
     margin-top: 0.31rem;
 }
 
 /* Sections du formulaire */
 .form-section {
     background: var(--card);
-    padding: 1.25rem; 
-    border-radius: 1.25rem; 
+    padding: 1.25rem; /* 20px */
+    border-radius: 1.25rem; /* 20px */
     margin-bottom: 1.25rem;
     box-shadow: 0 0.25rem 0.94rem rgba(0,0,0,0.02);
 }
 
 .form-section-title {
-    font-size: 1rem; 
+    font-size: 1rem; /* 16px */
     font-weight: 600;
     margin-bottom: 0.94rem;
     color: var(--primary);
@@ -718,7 +754,7 @@ input[type="search"] {
 .add-recipe-page label {
     font-weight: 500;
     margin-bottom: 0.5rem;
-    font-size: 0.875rem; 
+    font-size: 0.875rem; /* 14px */
     color: var(--text);
 }
 
@@ -741,9 +777,9 @@ input[type="file"] {
     background: #FFECEB;
     color: #FF3B30;
     border: none;
-    width: 2.18rem; 
-    height: 2.81rem; 
-    border-radius: 0.75rem; 
+    width: 2.18rem; /* 35px */
+    height: 2.81rem; /* 45px */
+    border-radius: 0.75rem; /* 12px */
     cursor: pointer;
     font-size: 0.75rem;
     flex-shrink: 0;
@@ -753,12 +789,13 @@ input[type="file"] {
 .btn-secondary {
     background: #E8F1F1;
     color: #4A6E6E;
-    font-size: 0.81rem;
+    font-size: 0.81rem; /* 13px */
     padding: 0.625rem;
     margin-top: 0.31rem;
     border-radius: 0.75rem;
 }
 
+/* Actions finales */
 .form-actions {
     display: flex;
     flex-direction: column;
@@ -780,19 +817,19 @@ input[type="file"] {
    ========================================================= */
 
    .edit-profile {
-    padding-top: 1.25rem; 
-    padding-bottom: 6.25rem; 
+    padding-top: 1.25rem; /* 20px */
+    padding-bottom: 6.25rem; /* 100px */
 }
 
 .edit-profile .form-card {
     background: var(--card);
-    padding: 1.875rem 1.25rem; 
+    padding: 1.875rem 1.25rem; /* 30px 20px */
     border-radius: var(--radius);
     box-shadow: 0 0.625rem 1.875rem rgba(0, 0, 0, 0.05);
 }
 
 .edit-profile h2 {
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* 24px */
     font-weight: 700;
     margin-bottom: 1.5rem;
     text-align: center;
@@ -845,7 +882,7 @@ input[type="file"] {
 /* Boutons */
 .edit-profile .btn-primary {
     margin-top: 1.5rem;
-    height: 3.4rem;
+    height: 3.4rem; /* 54px approx */
     font-size: 1rem;
     letter-spacing: 0.03rem;
 }
@@ -868,16 +905,17 @@ input[type="file"] {
 
 
 .edit-recipe {
-    padding-bottom: 6.25rem;
+    padding-bottom: 6.25rem; /* 100px */
 }
 
 .edit-recipe h2 {
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* 24px */
     font-weight: 700;
     margin-bottom: 1.5rem;
     color: var(--text);
 }
 
+/* On transforme le formulaire en sections comme pour l'ajout */
 .edit-recipe form {
     display: flex;
     flex-direction: column;
@@ -886,7 +924,7 @@ input[type="file"] {
 
 /* Conteneur d'aperçu de l'image */
 .edit-recipe .current-image-preview {
-    width: 9.375rem; 
+    width: 9.375rem; /* 150px */
     height: 9.375rem;
     border-radius: 1rem;
     object-fit: cover;
@@ -900,11 +938,12 @@ input[type="file"] {
     align-items: center;
     gap: 0.5rem;
     font-size: 0.875rem;
-    color: #FF3B30;
+    color: #FF3B30; /* Rouge pour l'action de suppression */
     margin-top: 0.5rem;
     cursor: pointer;
 }
 
+/* Réutilisation des styles de steps dynamiques */
 .edit-recipe .ingredient-step, 
 .edit-recipe .instruction-step, 
 .edit-recipe .category-step {
@@ -943,14 +982,14 @@ input[type="file"] {
     left: 0;
     right: 0;
     height: 4.68rem; /* 75px */
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.85); /* Fond blanc translucide */
+    backdrop-filter: blur(10px); /* Effet de flou iOS */
     -webkit-backdrop-filter: blur(10px);
     display: flex;
     justify-content: space-around;
     align-items: center;
     border-top: 0.06rem solid rgba(0, 0, 0, 0.05);
-    padding-bottom: env(safe-area-inset-bottom); 
+    padding-bottom: env(safe-area-inset-bottom); /* Gère l'encoche des iPhones récents */
     z-index: 1000;
 }
 
@@ -982,7 +1021,7 @@ input[type="file"] {
 }
 
 .nav-item.active span {
-    transform: translateY(-0.125rem); 
+    transform: translateY(-0.125rem); /* Petit saut vers le haut */
 }
 
 /* On ajoute un padding au bas du conteneur principal pour pas que le contenu soit caché par la nav */
@@ -994,16 +1033,19 @@ input[type="file"] {
    HEADER & NAVBAR (REM)
    ============================================================ */
 
+/* Sur mobile, on cache la navbar classique car on a la Bottom Nav */
 .navbar {
     display: none;
 }
 
+/* On stylise le container pour qu'il ne soit pas collé en haut sur mobile */
 .container {
     padding-top: 1.5rem; /* 24px */
     padding-left: 1rem;
     padding-right: 1rem;
 }
 
+/* Style pour les messages d'alerte (erreurs/succès) souvent placés juste après le header */
 .alert {
     padding: 1rem;
     border-radius: 0.875rem; /* 14px */
@@ -1103,7 +1145,7 @@ input[type="file"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(100vh - 12rem); 
+    min-height: calc(100vh - 12rem); /* Centre verticalement en tenant compte du header/footer */
     padding: 1.25rem;
 }
 
@@ -1116,7 +1158,7 @@ input[type="file"] {
 }
 
 .form-card h2 {
-    font-size: 1.75rem; 
+    font-size: 1.75rem; /* 28px */
     font-weight: 800;
     margin-bottom: 0.5rem;
     color: var(--text);
@@ -1128,6 +1170,7 @@ input[type="file"] {
     margin-bottom: 2rem;
 }
 
+/* Alertes spécifiques au login */
 .alert-success {
     background-color: #E8F5E9;
     color: #2E7D32;
@@ -1137,6 +1180,7 @@ input[type="file"] {
     font-size: 0.875rem;
 }
 
+/* Espacement du bouton */
 .btn-block {
     width: 100%;
     margin-top: 1rem;
@@ -1144,6 +1188,7 @@ input[type="file"] {
     font-size: 1rem;
 }
 
+/* Lien en bas du formulaire */
 .form-footer {
     text-align: center;
     margin-top: 2rem !important;
@@ -1162,7 +1207,7 @@ input[type="file"] {
    ============================================================ */
 
 .container h2 {
-    font-size: 1.5rem; 
+    font-size: 1.5rem; /* 24px */
     font-weight: 700;
     margin-bottom: 1.5rem;
     color: var(--text);
@@ -1175,7 +1220,7 @@ input[type="file"] {
     gap: 0.93rem; /* 15px */
     padding: 0.625rem; /* 10px */
     background: var(--card);
-    border: 0.06rem solid var(--border) !important; 
+    border: 0.06rem solid var(--border) !important; /* On écrase le inline #eee */
     border-radius: 1rem !important; /* 16px */
     margin-bottom: 0.75rem;
     transition: all 0.2s ease;
@@ -1194,7 +1239,7 @@ input[type="file"] {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 0.75rem !important; 
+    border-radius: 0.75rem !important; /* 12px */
 }
 
 /* Contenu textuel (Titre + Auteur) */
@@ -1224,6 +1269,7 @@ input[type="file"] {
     font-weight: 500;
 }
 
+/* Bouton retour */
 .container .btn[href*="profile"] {
     display: inline-block;
     padding: 0.75rem 1.25rem;
@@ -1240,6 +1286,7 @@ input[type="file"] {
    PAGE : PROFILE (REM)
    ============================================================ */
 
+/* Carte d'en-tête du profil */
 .profile-header-card {
     background: var(--card);
     padding: 2.5rem 1.25rem;
@@ -1354,7 +1401,7 @@ input[type="file"] {
 }
 
 .public-profile-avatar {
-    width: 5rem; 
+    width: 5rem; /* 80px */
     height: 5rem;
     border-radius: 50%;
     overflow: hidden;
@@ -1376,6 +1423,7 @@ input[type="file"] {
     color: var(--text);
 }
 
+/* Style du bouton Like (Cœur) */
 .like-button {
     display: inline-flex;
     align-items: center;
@@ -1392,6 +1440,7 @@ input[type="file"] {
     transform: scale(1.1);
 }
 
+/* Titre de la section recettes */
 .container h3 {
     font-size: 1.125rem;
     font-weight: 700;
@@ -1399,6 +1448,7 @@ input[type="file"] {
     padding-left: 0.31rem;
 }
 
+/* Réutilisation des styles de listes de recettes compactes */
 .public-profile .recipe-card {
     background: var(--card);
     border: 0.06rem solid var(--border) !important;
@@ -1411,6 +1461,7 @@ input[type="file"] {
    PAGE : RECIPE DETAIL (REM)
    ============================================================ */
 
+/* Image de couverture */
 .recipe-detail-image {
     width: 100%;
     border-radius: 1.25rem; /* 20px */
@@ -1419,6 +1470,7 @@ input[type="file"] {
     box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.08);
 }
 
+/* Header (Auteur & Likes) */
 .recipe-header {
     display: flex;
     justify-content: space-between;
@@ -1436,12 +1488,13 @@ input[type="file"] {
 }
 
 .author-avatar {
-    width: 2rem; 
+    width: 2rem; /* 32px */
     height: 2rem;
     border-radius: 50%;
     object-fit: cover;
 }
 
+/* Meta Infos (Temps, Difficulté) */
 .recipe-meta {
     font-size: 0.81rem; /* 13px */
     color: var(--muted);
@@ -1514,7 +1567,7 @@ input[type="file"] {
    PAGE : ALL RECIPES / BROWSE (REM)
    ============================================================ */
 
-.recipes-page {
+   .recipes-page {
     padding-bottom: 5rem;
 }
 
@@ -1524,7 +1577,7 @@ input[type="file"] {
 }
 
 .recipes-page-header h1 {
-    font-size: 1.75rem; 
+    font-size: 1.75rem; /* 28px */
     font-weight: 800;
     margin-bottom: 1rem;
 }
@@ -1534,14 +1587,27 @@ input[type="file"] {
     display: flex;
     gap: 0.5rem;
     width: 100%;
+    align-items: center; 
 }
 
 .recipes-page-header input[type="search"] {
-    flex: 1;
-    max-width: none !important; 
-    height: 3rem;
-    border-radius: 0.875rem;
+    flex: 3; 
+    min-width: 0; 
+    max-width: none !important;
+    height: 3.25rem; 
+    border-radius: 1rem;
     background: var(--card) !important;
+    padding: 0 1rem;
+    font-size: 1rem;
+}
+
+.recipes-page-header .btn-primary {
+    flex: 1; 
+    height: 3.25rem;
+    padding: 0 1rem !important;
+    font-size: 0.93rem;
+    border-radius: 1rem;
+    white-space: nowrap; 
 }
 
 /* Barre de filtres (Scroll Horizontal) */
@@ -1555,7 +1621,7 @@ input[type="file"] {
     gap: 0.625rem;
     overflow-x: auto;
     padding: 0 1rem;
-    scrollbar-width: none;
+    scrollbar-width: none; 
 }
 
 .filter-bar::-webkit-scrollbar {
@@ -1571,7 +1637,7 @@ input[type="file"] {
     border-radius: 2rem;
     font-size: 0.875rem;
     font-weight: 600;
-    white-space: nowrap;
+    white-space: nowrap; 
     transition: all 0.2s;
 }
 
@@ -1606,20 +1672,20 @@ input[type="file"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(100vh - 12rem); 
+    min-height: calc(100vh - 12rem); /* Centre le formulaire verticalement */
     padding: 1.25rem; /* 20px */
 }
 
 .form-card {
     background: var(--card);
     width: 100%;
-    padding: 2.5rem 1.5rem; 
+    padding: 2.5rem 1.5rem; /* 40px 24px */
     border-radius: var(--radius);
     box-shadow: 0 0.625rem 2rem rgba(0, 0, 0, 0.04);
 }
 
 .form-card h2 {
-    font-size: 1.75rem;
+    font-size: 1.75rem; /* 28px */
     font-weight: 800;
     margin-bottom: 0.5rem;
     color: var(--text);
@@ -1631,6 +1697,7 @@ input[type="file"] {
     margin-bottom: 2rem;
 }
 
+/* Espacement spécifique pour les groupes de champs */
 .form-group {
     margin-bottom: 1.25rem;
 }
